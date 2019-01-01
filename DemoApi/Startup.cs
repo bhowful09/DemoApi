@@ -38,8 +38,7 @@ namespace DemoApi
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            var connection = @"Data Source=SQL7001.site4now.net;Initial Catalog=DB_A43FF5_benhowarddev;User Id=DB_A43FF5_benhowarddev_admin;Password=fbD18JE1qP;";
-            services.AddDbContext<BenHowardDevContext>(options => options.UseSqlServer(connection));
+            services.AddDbContext<BenHowardDevContext>(options => options.UseSqlServer(Configuration.GetConnectionString("BenHowardDevDatabase")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
