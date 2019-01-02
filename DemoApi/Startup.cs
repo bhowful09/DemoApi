@@ -3,6 +3,8 @@ using DemoApi.Data;
 using DemoApi.Data.Repositories;
 using DemoApi.Logic;
 using DemoApi.Logic.Processors;
+using DemoApi.Logic.Validators;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +38,12 @@ namespace DemoApi
             services.AddScoped<CustomersProcessor>();
             services.AddScoped<CustomersRepository>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(opt =>
+            {
+                opt.Filters.Add(typeof(ValidatorActionFilter));
+            })
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CustomerValidator>())
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddDbContext<BenHowardDevContext>(options => options.UseSqlServer(Configuration.GetConnectionString("BenHowardDevDatabase")));
         }

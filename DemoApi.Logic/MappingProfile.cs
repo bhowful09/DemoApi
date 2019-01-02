@@ -11,7 +11,8 @@ namespace DemoApi.Logic
     {
         public MappingProfile()
         {
-            CreateMap<CustomerEntity, Customer>();
+            CreateMap<CustomerEntity, Customer>().ReverseMap();
+            CreateMap<CustomerEntity, CustomerCreate>().ReverseMap();
             //CreateMap<IEnumerable<CustomerEntity>, IEnumerable<Customer>>().ReverseMap();
         }
     }

@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DemoApi.Domain;
 using DemoApi.Logic.Processors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Net;
 
 namespace DemoApi.Controllers
 {
@@ -20,37 +21,59 @@ namespace DemoApi.Controllers
 
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult<IEnumerable<Customer>> Get()
         {
             return Ok(_customersProcessor.GetAll());
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult<Customer> Get(int id)
         {
-            return Ok(_customersProcessor.GetById(id));
+            var customer = _customersProcessor.GetById(id);
+
+            if (customer == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(customer);
         }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public ActionResult<Customer> Post([FromBody] CustomerCreate value)
         {
-            throw new NotImplementedException();
+            var customer = _customersProcessor.Insert(value);
+
+            if (customer == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, $"Record could not be created");
+            }
+
+            return Ok(customer);
         }
 
         // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public ActionResult<Customer> Put([FromBody] Customer value)
         {
-            throw new NotImplementedException();
+            var customer = _customersProcessor.Update(value);
+
+            if (customer == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, $"Record does not exist to update id {value.Id}");
+            }
+
+            return Ok(customer);
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public ActionResult Delete(int id)
         {
-            throw new NotImplementedException();
+            _customersProcessor.Delete(id);
+            return NoContent();
         }
     }
 }
