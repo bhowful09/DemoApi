@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DemoApi.Domain
+﻿namespace DemoApi.Domain
 {
     public class Customer
     {
