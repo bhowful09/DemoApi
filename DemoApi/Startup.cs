@@ -8,6 +8,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,11 +42,19 @@ namespace DemoApi
             services.AddMvc(opt =>
             {
                 opt.Filters.Add(typeof(ValidatorActionFilter));
+                opt.Filters.Add(new CorsAuthorizationFilterFactory("AllowMyOrigin"));
             })
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CustomerValidator>())
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddDbContext<BenHowardDevContext>(options => options.UseSqlServer(Configuration.GetConnectionString("BenHowardDevDatabase")));
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowMyOrigin",
+                builder => builder.WithOrigins("http://lazerpanther-001-site2.atempurl.com", "https://localhost:44309", "http://localhost:65432")
+                .WithMethods("GET", "POST", "PUT", "DELETE"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,6 +71,7 @@ namespace DemoApi
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            app.UseCors("AllowMyOrigin");
         }
     }
 }
